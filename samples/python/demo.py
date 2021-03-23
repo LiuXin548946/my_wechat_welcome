@@ -150,6 +150,9 @@ class LoginTipBot(wechat.CallbackHandler):
         target_room_name_list = ["金枝玉叶", "德惠的希望"]
         ban_speech_str = "{$@}\n本群禁止非管理员发消息，请撤回。"
         # 拿到当前群名字，正常应该要有
+        if message_data["room_wxid"] not in self.room_data_dict:
+            print("------------------- ban_speech: room not found!!! --------------")
+            return
         room_name = self.room_data_dict[message_data["room_wxid"]]["nickname"]
         # 判断群
         if room_name in target_room_name_list:
