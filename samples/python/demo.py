@@ -18,9 +18,10 @@ def on_connect(client_id):
 
 @wechat.RECV_CALLBACK(in_class=False)
 def on_recv(client_id, message_type, message_data):
-    print('[on_recv] client_id: {0}, message_type: {1}, message:{2}'.format(client_id,
-                                                                            message_type,
-                                                                            json.dumps(message_data, ensure_ascii=False)))
+    str_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    print('{} [on_recv] message_type:{}, message:{}, client_id:{}'.format(str_time, message_type,
+                                                                          json.dumps(message_data, ensure_ascii=False),
+                                                                          client_id))
 
 
 @wechat.CLOSE_CALLBACK(in_class=False)
@@ -41,15 +42,15 @@ class LoginTipBot(wechat.CallbackHandler):
     def on_message(self, client_id, message_type, message_data):
         # 判断登录成功后，就向文件助手发条消息
         if message_type == MessageType.MT_USER_LOGIN:
-            time.sleep(2)
-            wechat_manager.send_text(client_id, 'filehelper', '😂😂😂\uE052该消息通过wechat_pc_api项目接口发送')
-            
-            wechat_manager.send_link(client_id, 
-            'filehelper', 
-            'wechat_pc_api项目', 
-            'WeChatPc机器人项目', 
-            'https://github.com/smallevilbeast/wechat_pc_api', 
-            'https://www.showdoc.com.cn/server/api/attachment/visitfile/sign/0203e82433363e5ff9c6aa88aa9f1bbe?showdoc=.jpg)')
+            # time.sleep(2)
+            wechat_manager.send_text(client_id, 'filehelper', '机器人已上线！')
+            # wechat_manager.send_link(client_id,
+            # 'filehelper',
+            # 'wechat_pc_api项目',
+            # 'WeChatPc机器人项目',
+            # 'https://github.com/smallevilbeast/wechat_pc_api',
+            # 'https://www.showdoc.com.cn/server/api/attachment/visitfile/sign/0203e82433363e5ff9c6aa88aa9f1bbe?showdoc=.jpg)')
+
             # public = wechat_manager.get_publics(client_id)
             # print("公众号：", type(public), public)
             friends = wechat_manager.get_friends(client_id)
@@ -116,7 +117,7 @@ class LoginTipBot(wechat.CallbackHandler):
             return
 
     def firend_welcome(self, client_id, message_data):
-        welcome_str = "您好！"
+        welcome_str = "您好！有什么可以帮您？"
         # 发消息
         wechat_manager.send_text(client_id, message_data["from_wxid"], welcome_str)
         pass
@@ -128,7 +129,10 @@ class LoginTipBot(wechat.CallbackHandler):
             return
         # 单体(私聊)
         else:
-            pass
+            # 发消息
+            if message_data["msg"] == "@云长何在？@":
+                wechat_manager.send_text(client_id, message_data["from_wxid"], "机器人正在工作中！")
+            return
         pass
 
     def system_handle(self, client_id, message_data):
@@ -147,8 +151,8 @@ class LoginTipBot(wechat.CallbackHandler):
         pass
 
     def ban_speech(self, client_id, message_data):
-        target_room_name_list = ["金枝玉叶", "德惠的希望"]
-        ban_speech_str = "{$@}\n本群禁止非管理员发消息，请撤回。"
+        target_room_name_list = ["长春招聘人力资源8群", "金枝玉叶", "德惠的希望"]
+        ban_speech_str = "{$@}\n⚠本群禁止非管理员发消息，请撤回。"
         # 拿到当前群名字，正常应该要有
         if message_data["room_wxid"] not in self.room_data_dict:
             print("------------------- ban_speech: room not found!!! --------------")
@@ -165,9 +169,9 @@ class LoginTipBot(wechat.CallbackHandler):
         pass
 
     def room_welcome(self, client_id, message_data):
-        target_room_name_list = ["金枝玉叶", "德惠的希望"]
+        target_room_name_list = ["长春招聘人力资源8群", "金枝玉叶", "德惠的希望"]
         # 欢迎语
-        welcome_str =  "热烈欢迎【{}】加入本群！\n1.本群不定期发布各大：\n企事业、国企、私企、个企人才招聘岗位。🎉\n2.致力于岗位招聘，人才就业，协调咨询，落实保障等人力资源业务。💪\n3.企业加群管理全平台免费发布招聘岗位信息。[爱你]\n4.欢迎各位老板、高管、高材前来洽谈合作。[握手]\n5.本群为业务群，禁止说话，有事请咨询私信群管理。[闭嘴]\n6.本群会经常发福利红包！！！💰\n7.禁止互加好友，防止上当受骗！⚠\n（企事业？高薪？五险一金？铁饭碗？想进某单位无渠道？☞☞☞来找我这些都不是问题，都给你安排到位）"
+        welcome_str =  "欢迎【{}】加入本群！\n📣 📣 📣 \n1.本群不定期发布各大：\n企事业、国企、私企、个企人才招聘岗位。🎉\n2.致力于岗位招聘，人才就业，协调咨询，落实保障等人力资源业务。💪\n3.企业加群管理全平台免费发布招聘岗位信息。[爱你]\n4.欢迎各位老板、高管、高材前来洽谈合作。[握手]\n5.本群为业务群，禁止说话，有事请咨询私信群管理。[闭嘴]\n6.本群会经常发福利红包！！！💰\n7.禁止互加好友，防止上当受骗！⚠\n（企事业？高薪？五险一金？铁饭碗？想进某单位无渠道？☞☞☞来找我这些都不是问题，都给你安排到位）"
         # 判断群
         if message_data["room_name"] in target_room_name_list:
             raw_msg = message_data["raw_msg"]
